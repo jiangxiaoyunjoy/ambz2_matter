@@ -60,6 +60,7 @@ ROMIMG =
 
 # Uncomment to enable multiple BLE with matter
 #BLE_MATTER_ADAPTER = 1
+BLE_MATTER_SCATTERNET_ADAPTER = 1
 
 # Include folder list
 # -------------------------------------------------------------------
@@ -181,12 +182,15 @@ INCLUDES += -I../../../component/common/application/amazon/amazon-ffs/ffs_demo/r
 
 
 # Matter
-ifdef BT_MATTER_MESH_ADAPTER
+ifeq ($(BT_MATTER_MESH_ADAPTER),1)
 INCLUDES += -I../../../component/common/application/matter/common/bluetooth/
 INCLUDES += -I../../../component/common/bluetooth/realtek/sdk/example/bt_mesh_multiple_profile/bt_mesh_device_matter
-else if BLE_MATTER_ADAPTER
+else ifeq ($(BLE_MATTER_ADAPTER),1) 
 INCLUDES += -I../../../component/common/application/matter/common/bluetooth/
 INCLUDES += -I../../../component/common/bluetooth/realtek/sdk/example/ble_matter_adapter/
+else ifeq ($(BLE_MATTER_SCATTERNET_ADAPTER),1) 
+INCLUDES += -I../../../component/common/application/matter/common/bluetooth/
+INCLUDES += -I../../../component/common/bluetooth/realtek/sdk/example/ble_matter_scatternet_adapter/
 else
 INCLUDES += -I../../../component/common/application/matter/common/bluetooth/bt_matter_adapter
 endif
@@ -282,7 +286,7 @@ SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/bt_config/bt_co
 SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/bt_config/bt_config_service.c
 SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/bt_config/bt_config_wifi.c
 
-ifdef BT_MATTER_MESH_ADAPTER
+ifeq ($(BT_MATTER_MESH_ADAPTER),1) 
 #bluetooth - example - bt_mesh_device_matter
 SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/cmd/mesh_data_uart.c
 SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/cmd/mesh_user_cmd_parse.c
@@ -334,9 +338,8 @@ SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh_multipl
 SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh_multiple_profile/bt_mesh_device_matter/bt_mesh_device_matter_app_main.c
 SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh_multiple_profile/bt_mesh_device_matter/bt_mesh_device_matter_app_task.c
 SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh_multiple_profile/bt_mesh_device_matter/bt_mesh_device_matter_cmd.c
-else
 
-ifdef BLE_MATTER_ADAPTER
+else ifeq ($(BLE_MATTER_ADAPTER),1) 
 SRC_C += ../../../component/common/application/matter/common/bluetooth/matter_blemgr_common.c
 
 #bluetooth - example - ble_matter_adapter
@@ -345,6 +348,15 @@ SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/ble_matter_adap
 SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/ble_matter_adapter/ble_matter_adapter_app_main.c
 SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/ble_matter_adapter/ble_matter_adapter_app.c
 
+else ifeq ($(BLE_MATTER_SCATTERNET_ADAPTER),1) 
+SRC_C += ../../../component/common/application/matter/common/bluetooth/matter_blemgr_common.c
+
+#bluetooth - example - ble_matter_scatternet_adapter
+SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/ble_matter_scatternet_adapter/ble_matter_scatternet_adapter_service.c
+SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/ble_matter_scatternet_adapter/ble_matter_scatternet_adapter_app_task.c
+SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/ble_matter_scatternet_adapter/ble_matter_scatternet_adapter_app_main.c
+SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/ble_matter_scatternet_adapter/ble_matter_scatternet_adapter_app.c
+
 else
 #bluetooth - example - bt_matter_adapter
 SRC_C += ../../../component/common/application/matter/common/bluetooth/bt_matter_adapter/bt_matter_adapter_app_main.c
@@ -352,7 +364,6 @@ SRC_C += ../../../component/common/application/matter/common/bluetooth/bt_matter
 SRC_C += ../../../component/common/application/matter/common/bluetooth/bt_matter_adapter/bt_matter_adapter_peripheral_app.c
 SRC_C += ../../../component/common/application/matter/common/bluetooth/bt_matter_adapter/bt_matter_adapter_service.c
 #SRC_C += ../../../component/common/application/matter/common/bluetooth/bt_matter_adapter/bt_matter_adapter_wifi.c
-endif
 endif
 
 #bluetooth - example
@@ -772,6 +783,10 @@ endif
 # for matter adapter
 ifdef BLE_MATTER_ADAPTER
 CFLAGS += -DCONFIG_BLE_MATTER_ADAPTER=1
+endif
+
+ifdef BLE_MATTER_SCATTERNET_ADAPTER
+CFLAGS += -DCONFIG_BLE_MATTER_SCATTERNET_ADAPTER=1
 endif
 
 CFLAGS += -DCHIP_PROJECT=0
