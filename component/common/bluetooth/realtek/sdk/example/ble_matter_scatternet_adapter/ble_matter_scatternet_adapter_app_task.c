@@ -228,6 +228,24 @@ void ble_matter_scatternet_adapter_app_task_deinit(void)
 
 }
 
+void ble_matter_scatternet_adapter_at_cmd_send_msg(uint16_t subtype, void *arg)
+{
+	uint8_t event = EVENT_IO_TO_APP;
+
+	T_IO_MSG io_msg;
+
+	io_msg.type = IO_MSG_TYPE_AT_CMD;
+	io_msg.subtype = subtype;
+	io_msg.u.buf = arg;
+
+	if (ble_matter_scatternet_adapter_evt_queue_handle != NULL && ble_matter_scatternet_adapter_io_queue_handle != NULL) {
+		if (os_msg_send(ble_matter_scatternet_adapter_io_queue_handle, &io_msg, 0) == false) {
+			printf("ble at cmd send msg fail: subtype 0x%x", io_msg.subtype);
+		} else if (os_msg_send(ble_matter_scatternet_adapter_evt_queue_handle, &event, 0) == false) {
+			printf("ble at cmd send event fail: subtype 0x%x", io_msg.subtype);
+		}
+	}
+}
 
 /** @} */ /* End of group CENTRAL_CLIENT_APP_TASK */
 #endif

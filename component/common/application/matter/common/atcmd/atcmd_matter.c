@@ -16,6 +16,11 @@ extern void amebaApplyUpdateCmdHandler();
 #endif
 #endif
 
+#if (defined(CONFIG_BLE_MATTER_SCATTERNET_ADAPTER) && CONFIG_BLE_MATTER_SCATTERNET_ADAPTER)
+#include <app_msg.h>
+#include "ble_matter_scatternet_adapter_at_cmd.h"
+#endif
+
 // Queue for matter shell
 QueueHandle_t shell_queue;
 
@@ -80,6 +85,18 @@ log_item_t at_matter_items[] = {
     {"ATM^", fATchipapp2, {NULL, NULL}},
     {"ATMS", fATmattershell, {NULL, NULL}},
 #endif // end of #if ATCMD_VER == ATVER_1
+#endif
+
+#if (defined(CONFIG_BLE_MATTER_SCATTERNET_ADAPTER) && CONFIG_BLE_MATTER_SCATTERNET_ADAPTER)
+    {"ATBS", fATBS, {NULL,NULL}},
+    {"ATBC", fATBC, {NULL,NULL}},
+    {"ATBD", fATBD, {NULL,NULL}},
+    {"ATBI", fATBI, {NULL,NULL}},
+	{"ATBK", fATBK, {NULL,NULL}},
+	{"ATBO", fATBO, {NULL,NULL}},
+	{"ATBG", fATBG, {NULL,NULL}},
+	{"ATBR", fATBR, {NULL,NULL}},
+	{"ATBW", fATBW, {NULL,NULL}},
 #endif
 };
 

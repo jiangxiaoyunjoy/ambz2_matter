@@ -29,7 +29,7 @@ void ble_matter_scatternet_adapter_callback_main_task(void *p_param);
 void ble_matter_scatternet_adapter_app_main_task(void *p_param);
 void ble_matter_scatternet_adapter_app_task_init(void);
 void ble_matter_scatternet_adapter_app_task_deinit(void);
-
+void ble_matter_scatternet_adapter_at_cmd_send_msg(uint16_t subtype, void *arg);
 #ifdef __cplusplus
 }
 #endif

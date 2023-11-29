@@ -34,6 +34,7 @@
 #include "os_msg.h"
 #include "os_sync.h"
 #include "os_queue.h"
+#include "basic_types.h"
 #include <ble_matter_scatternet_adapter_app_flags.h>
 #include <ble_matter_scatternet_adapter_app.h>
 #include <ble_matter_scatternet_adapter_app_task.h>
@@ -540,11 +541,9 @@ void ble_matter_scatternet_adapter_app_handle_io_msg(T_IO_MSG io_msg)
         break;
     case IO_MSG_TYPE_AT_CMD:
         {
-            //uint16_t subtype = io_msg.subtype;
-            //void *arg = io_msg.u.buf;
-            //if (ble_central_app_handle_at_cmd(subtype, arg) != 1) {
-                //ble_peripheral_app_handle_at_cmd(subtype, arg);
-            //}
+            uint16_t subtype = io_msg.subtype;
+			void *arg = io_msg.u.buf;
+			ble_matter_scatternet_adapter_handle_at_cmd(subtype, arg);
         }
         break;
     case IO_MSG_TYPE_QDECODE:
@@ -574,9 +573,6 @@ void ble_matter_scatternet_adapter_app_handle_io_msg(T_IO_MSG io_msg)
             } else if (io_msg.subtype == 5) {
                 uint8_t conn_id = io_msg.u.buf;
                 le_disconnect(conn_id);
-            //}
-			            } else if (io_msg.subtype == 6) {
-                le_scan_start();
             }
         }
         break;
