@@ -95,7 +95,7 @@ T_ATTRIB_APPL ble_matter_scatternet_adapter_service_tbl[] =
 		},
 		0, /* bValueLen */
 		NULL,
-		GATT_PERM_READ //GATT_PERM_NONE // permissions 
+		GATT_PERM_READ //GATT_PERM_NONE // permissions
 	},
 	/* client characteristic configuration */
 	{

@@ -57,14 +57,14 @@ typedef struct
  *============================================================================*/
 T_APP_RESULT  ble_matter_adapter_service_attr_read_cb(uint8_t conn_id, T_SERVER_ID service_id,
                                             uint16_t attrib_index, uint16_t offset, uint16_t *p_length, uint8_t **pp_value);
-                                            
+
 T_APP_RESULT ble_matter_adapter_service_attr_write_cb(uint8_t conn_id, T_SERVER_ID service_id,
                                             uint16_t attrib_index, T_WRITE_TYPE write_type, uint16_t length, uint8_t *p_value,
-                                            P_FUN_WRITE_IND_POST_PROC *p_write_ind_post_proc); 
-                                                       
+                                            P_FUN_WRITE_IND_POST_PROC *p_write_ind_post_proc);
+
 void ble_matter_adapter_service_cccd_update_cb(uint8_t conn_id, T_SERVER_ID service_id, uint16_t index,
-                                     uint16_t cccbits);      
-                                                               
+                                     uint16_t cccbits);
+
 T_SERVER_ID ble_matter_adapter_service_add_service(void *p_func);
 
 #ifdef __cplusplus

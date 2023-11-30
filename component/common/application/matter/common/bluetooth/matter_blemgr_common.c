@@ -14,7 +14,7 @@
 #include "os_timer.h"
 #include "matter_blemgr_common.h"
 
-#if (defined (CONFIG_BLE_MATTER_ADAPTER) && CONFIG_BLE_MATTER_ADAPTER) 
+#if (defined (CONFIG_BLE_MATTER_ADAPTER) && CONFIG_BLE_MATTER_ADAPTER)
 #include "ble_matter_adapter_app_main.h"
 #include "ble_matter_adapter_app_flags.h"
 #include "ble_matter_adapter_app.h"
@@ -44,7 +44,7 @@ uint8_t customer_rsp_data_length = sizeof(customer_rsp_data);
 matter_blemgr_callback matter_blemgr_callback_func = NULL;
 void *matter_blemgr_callback_data = NULL;
 
-#if (defined (CONFIG_BLE_MATTER_ADAPTER) && CONFIG_BLE_MATTER_ADAPTER) 
+#if (defined (CONFIG_BLE_MATTER_ADAPTER) && CONFIG_BLE_MATTER_ADAPTER)
 extern int ble_matter_adapter_peripheral_app_max_links; //app.c
 extern T_SERVER_ID ble_matter_adapter_service_id;
 #elif (defined(CONFIG_BLE_MATTER_SCATTERNET_ADAPTER) && CONFIG_BLE_MATTER_SCATTERNET_ADAPTER)
@@ -62,7 +62,7 @@ extern uint8_t customer_adv_id;
  *============================================================================*/
 extern void ble_matter_adapter_multi_adv_init();
 int matter_blemgr_init(void) {
-#if (defined (CONFIG_BLE_MATTER_ADAPTER) && CONFIG_BLE_MATTER_ADAPTER) 
+#if (defined (CONFIG_BLE_MATTER_ADAPTER) && CONFIG_BLE_MATTER_ADAPTER)
 	ble_matter_adapter_app_init();
 #elif (defined(CONFIG_BLE_MATTER_SCATTERNET_ADAPTER) && CONFIG_BLE_MATTER_SCATTERNET_ADAPTER)
 	ble_matter_scatternet_adapter_app_init();
@@ -121,7 +121,7 @@ uint16_t matter_blemgr_get_mtu(uint8_t connect_id) {
 	int ret;
 	uint16_t mtu_size;
 	
-#if (defined (CONFIG_BLE_MATTER_ADAPTER) && CONFIG_BLE_MATTER_ADAPTER) 
+#if (defined (CONFIG_BLE_MATTER_ADAPTER) && CONFIG_BLE_MATTER_ADAPTER)
 	if (ble_matter_adapter_peripheral_app_max_links == 0) {
 #elif (defined(CONFIG_BLE_MATTER_SCATTERNET_ADAPTER) && CONFIG_BLE_MATTER_SCATTERNET_ADAPTER)
 	if (ble_matter_scatternet_adapter_peripheral_app_max_links == 0) {
@@ -151,7 +151,7 @@ int matter_blemgr_set_device_name(char *device_name, uint8_t device_name_length)
 }
 
 int matter_blemgr_disconnect(uint8_t connect_id) {
-#if (defined (CONFIG_BLE_MATTER_ADAPTER) && CONFIG_BLE_MATTER_ADAPTER) 
+#if (defined (CONFIG_BLE_MATTER_ADAPTER) && CONFIG_BLE_MATTER_ADAPTER)
 	if (connect_id >= BLE_MATTER_ADAPTER_APP_MAX_LINKS) {
 #elif (defined(CONFIG_BLE_MATTER_SCATTERNET_ADAPTER) && CONFIG_BLE_MATTER_SCATTERNET_ADAPTER)
 	if (connect_id >= BLE_MATTER_SCATTERNET_ADAPTER_APP_MAX_LINKS) {
@@ -163,7 +163,7 @@ int matter_blemgr_disconnect(uint8_t connect_id) {
 	uint8_t *conn_id = (uint8_t *)os_mem_alloc(0, sizeof(uint8_t));
 	*conn_id = connect_id;
 
-#if (defined (CONFIG_BLE_MATTER_ADAPTER) && CONFIG_BLE_MATTER_ADAPTER) 
+#if (defined (CONFIG_BLE_MATTER_ADAPTER) && CONFIG_BLE_MATTER_ADAPTER)
 	if ((ble_matter_adapter_app_send_api_msg(5, conn_id)) == false) {
 #elif (defined(CONFIG_BLE_MATTER_SCATTERNET_ADAPTER) && CONFIG_BLE_MATTER_SCATTERNET_ADAPTER)
 	if ((ble_matter_scatternet_adapter_app_send_api_msg(5, conn_id)) == false) {
@@ -176,7 +176,7 @@ int matter_blemgr_disconnect(uint8_t connect_id) {
 }
 
 int matter_blemgr_send_indication(uint8_t connect_id, uint8_t *data, uint16_t data_length) {
-#if (defined (CONFIG_BLE_MATTER_ADAPTER) && CONFIG_BLE_MATTER_ADAPTER) 
+#if (defined (CONFIG_BLE_MATTER_ADAPTER) && CONFIG_BLE_MATTER_ADAPTER)
 	if (connect_id >= BLE_MATTER_ADAPTER_APP_MAX_LINKS || data == NULL || data_length == 0) {
 #elif (defined(CONFIG_BLE_MATTER_SCATTERNET_ADAPTER) && CONFIG_BLE_MATTER_SCATTERNET_ADAPTER)
 	if (connect_id >= BLE_MATTER_SCATTERNET_ADAPTER_APP_MAX_LINKS || data == NULL || data_length == 0) {
@@ -188,24 +188,24 @@ int matter_blemgr_send_indication(uint8_t connect_id, uint8_t *data, uint16_t da
 	if (indication_param)
     	{
         	indication_param->conn_id = connect_id;
-#if (defined (CONFIG_BLE_MATTER_ADAPTER) && CONFIG_BLE_MATTER_ADAPTER) 
-		indication_param->service_id = ble_matter_adapter_service_id;
+#if (defined (CONFIG_BLE_MATTER_ADAPTER) && CONFIG_BLE_MATTER_ADAPTER)
+			indication_param->service_id = ble_matter_adapter_service_id;
         	indication_param->attrib_index = BT_MATTER_ADAPTER_SERVICE_CHAR_TX_INDEX;
 #elif (defined(CONFIG_BLE_MATTER_SCATTERNET_ADAPTER) && CONFIG_BLE_MATTER_SCATTERNET_ADAPTER)
-		indication_param->service_id = ble_matter_scatternet_adapter_service_id;
+			indication_param->service_id = ble_matter_scatternet_adapter_service_id;
         	indication_param->attrib_index = BT_MATTER_SCATTERNET_ADAPTER_SERVICE_CHAR_TX_INDEX;
 #endif
-		indication_param->data_len = data_length;
-		indication_param->type = GATT_PDU_TYPE_INDICATION;
+			indication_param->data_len = data_length;
+			indication_param->type = GATT_PDU_TYPE_INDICATION;
         	if (indication_param->data_len != 0)
         	{
             		indication_param->p_data = os_mem_alloc(0, indication_param->data_len);
             		memcpy(indication_param->p_data, data, indication_param->data_len);
         	}
-#if (defined (CONFIG_BLE_MATTER_ADAPTER) && CONFIG_BLE_MATTER_ADAPTER) 
-		if (ble_matter_adapter_app_send_api_msg(4, indication_param) == false)
+#if (defined (CONFIG_BLE_MATTER_ADAPTER) && CONFIG_BLE_MATTER_ADAPTER)
+			if (ble_matter_adapter_app_send_api_msg(4, indication_param) == false)
 #elif (defined(CONFIG_BLE_MATTER_SCATTERNET_ADAPTER) && CONFIG_BLE_MATTER_SCATTERNET_ADAPTER)
-		if (ble_matter_scatternet_adapter_app_send_api_msg(4, indication_param) == false)
+			if (ble_matter_scatternet_adapter_app_send_api_msg(4, indication_param) == false)
 #endif
         	{
             		printf("[%s] os_mem_free\r\n");

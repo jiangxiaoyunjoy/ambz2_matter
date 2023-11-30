@@ -25,7 +25,6 @@
 #include <gap_msg.h>
 #include <gap_bond_le.h>
 #include <gap_conn_le.h>
-//#include "ble_matter_scatternet_adapter_app_task.h"
 #include "ble_matter_scatternet_adapter_at_cmd.h"
 #include <ble_matter_scatternet_adapter_app_flags.h>
 #include "os_msg.h"
@@ -135,7 +134,7 @@ void fATBC(void *arg)
 		printf("[printf] ERROR: input parameter error!\n\r");
 		goto exit;
 	}
-	
+
 	ble_matter_scatternet_adapter_at_cmd_send_msg(2, ble_at_cmd_buf);
 	return;
 
@@ -444,14 +443,14 @@ int ble_matter_scatternet_adapter_handle_at_cmd(uint16_t subtype, void *arg)
         case 6://bond
         {
             if(strcmp(argv[1],"CLEAR") == 0) {
-		        le_bond_clear_all_keys();
+                le_bond_clear_all_keys();
 	        }else if(strcmp(argv[1], "INFO") == 0){
-	        	u8 i;
-	        	T_LE_KEY_ENTRY *p_entry;
-	        	for (i = 0; i < bond_storage_num; i++) {    
-	    		p_entry = le_find_key_entry_by_idx(i);
-	    		if (p_entry != NULL) {
-	        		printf("bond_dev[%d]: bd 0x%02x%02x%02x%02x%02x%02x, addr_type %d, flags 0x%x\r\n",
+                u8 i;
+                T_LE_KEY_ENTRY *p_entry;
+                for (i = 0; i < bond_storage_num; i++) {
+                p_entry = le_find_key_entry_by_idx(i);
+                if (p_entry != NULL) {
+                    printf("bond_dev[%d]: bd 0x%02x%02x%02x%02x%02x%02x, addr_type %d, flags 0x%x\r\n",
 							p_entry->idx,
 							p_entry->remote_bd.addr[5],
 							p_entry->remote_bd.addr[4],
@@ -461,11 +460,11 @@ int ble_matter_scatternet_adapter_handle_at_cmd(uint16_t subtype, void *arg)
 							p_entry->remote_bd.addr[0],
 							p_entry->remote_bd.remote_bd_type,
 							p_entry->flags);
-		        	}
-	        	}
-        	}else{
-		        printf("ERROR:input command error!\r\n");
-        	}
+					}
+				}
+            }else{
+                printf("ERROR:input command error!\r\n");
+            }
         }
         break;
 
@@ -632,7 +631,7 @@ int ble_matter_scatternet_adapter_handle_at_cmd(uint16_t subtype, void *arg)
                     data[i] = 0xff;
             }
 
-            T_GAP_CAUSE ret = (conn_id, (T_GATT_WRITE_TYPE)write_type, handle, length, data);
+            T_GAP_CAUSE ret =gcs_attr_write(conn_id, (T_GATT_WRITE_TYPE)write_type, handle, length, data);
 
             if (data != NULL)
                 os_mem_free(data);

@@ -110,7 +110,7 @@ bool matter_multi_adv_stop_by_id(uint8_t *adv_id)
 	if(*adv_id < 0 || *adv_id >= MAX_ADV_NUMBER){
 			printf("[%s] wrong input advId:%d\r\n",__func__, *adv_id);
 			return 1;
-	}	
+	}
 	if(!matter_multi_adv_param_array[*adv_id].is_used){
 		printf("[%s] adv id %d is already stop or not start\r\n",__func__, *adv_id);
 		return 1;
@@ -138,7 +138,6 @@ bool matter_multi_adv_start_by_id(uint8_t *adv_id, uint8_t *adv_data, uint16_t a
 	if ((MAX_ADV_NUMBER != *adv_id) && (matter_multi_adv_param_array[*adv_id].is_used == 1)) {
 		os_timer_stop(&matter_multi_adv_param_array[*adv_id].one_shot_timer);
 	} else {
-	
 		*adv_id = matter_get_unused_adv_index();
 		if(MAX_ADV_NUMBER == *adv_id){
 			printf("[%s] Extend the max adv num %d\r\n", __func__, MAX_ADV_NUMBER);
@@ -617,7 +616,6 @@ void ble_matter_scatternet_adapter_app_handle_dev_state_evt(T_GAP_DEV_STATE new_
 		if (new_state.gap_scan_state == GAP_SCAN_STATE_IDLE) {
 			APP_PRINT_INFO0("GAP scan stop");
 			printf("GAP scan stop\r\n");
-			
 		} else if (new_state.gap_scan_state == GAP_SCAN_STATE_SCANNING) {
 			APP_PRINT_INFO0("GAP scan start");
 			printf("GAP scan start\r\n");
@@ -633,7 +631,6 @@ void ble_matter_scatternet_adapter_app_handle_dev_state_evt(T_GAP_DEV_STATE new_
 				APP_PRINT_INFO0("GAP adv stoped");
 				printf("GAP adv stopped\r\n");
 			}
-			
 		} else if (new_state.gap_adv_state == GAP_ADV_STATE_ADVERTISING) {
 			APP_PRINT_INFO0("GAP adv start");
 			printf("GAP adv start\r\n");
@@ -728,7 +725,7 @@ void ble_matter_scatternet_adapter_app_handle_conn_state_evt(uint8_t conn_id, T_
 	    uint16_t conn_interval;
         uint16_t conn_latency;
         uint16_t conn_supervision_timeout;
-        
+
 		le_get_conn_addr(conn_id, ble_matter_scatternet_adapter_app_link_table[conn_id].bd_addr,
 						 (void *)&ble_matter_scatternet_adapter_app_link_table[conn_id].bd_type);
 
@@ -741,7 +738,7 @@ void ble_matter_scatternet_adapter_app_handle_conn_state_evt(uint8_t conn_id, T_
 			ble_matter_scatternet_adapter_peripheral_app_max_links ++;			}
 		}
 		printf("Connected success conn_id %d\r\n", conn_id);
-		
+
         uint8_t local_bd_type;
         uint8_t remote_bd_type;
 		le_get_conn_param(GAP_PARAM_CONN_LOCAL_BD_TYPE, &local_bd_type, conn_id);
@@ -750,10 +747,10 @@ void ble_matter_scatternet_adapter_app_handle_conn_state_evt(uint8_t conn_id, T_
 						conn_id, local_bd_type, remote_bd_type);
 		printf("GAP_CONN_STATE_CONNECTED: conn_id %d, local_bd_type %d, remote_bd_type %d\n",
 			   conn_id, local_bd_type, remote_bd_type);
-			   
+
         le_get_conn_param(GAP_PARAM_CONN_INTERVAL, &conn_interval, conn_id);
         le_get_conn_param(GAP_PARAM_CONN_LATENCY, &conn_latency, conn_id);
-        le_get_conn_param(GAP_PARAM_CONN_TIMEOUT, &conn_supervision_timeout, conn_id);            
+        le_get_conn_param(GAP_PARAM_CONN_TIMEOUT, &conn_supervision_timeout, conn_id);
 		le_get_conn_addr(conn_id, ble_matter_scatternet_adapter_app_link_table[conn_id].bd_addr,
                              &ble_matter_scatternet_adapter_app_link_table[conn_id].bd_type);
         APP_PRINT_INFO5("GAP_CONN_STATE_CONNECTED:remote_bd %s, remote_addr_type %d, conn_interval 0x%x, conn_latency 0x%x, conn_supervision_timeout 0x%x",
@@ -779,12 +776,12 @@ void ble_matter_scatternet_adapter_app_handle_conn_state_evt(uint8_t conn_id, T_
                 matter_multi_adv_param_array[1].connect_flag == true;
 		matter_multi_adv_stop_by_id(&customer_adv_id); // stop customer adv
 		}
-#else	   
+#else
 	    //send data to matter
         BT_MATTER_CONN_EVENT *connected = os_mem_alloc(0, sizeof(BT_MATTER_CONN_EVENT));
         if(connected)
         {
-        	connected->conn_id = conn_id;
+            connected->conn_id = conn_id;
             connected->new_state = new_state;
             connected->disc_cause = disc_cause;
             if(ble_matter_scatternet_adapter_send_callback_msg(BT_MATTER_SEND_CB_MSG_CONNECTED, NULL, connected)==false)
@@ -805,7 +802,7 @@ void ble_matter_scatternet_adapter_app_handle_conn_state_evt(uint8_t conn_id, T_
 			APP_PRINT_INFO2("GAP_CONN_STATE_CONNECTED: tx_phy %d, rx_phy %d\n", tx_phy, rx_phy);
 			printf("GAP_CONN_STATE_CONNECTED: tx_phy %d, rx_phy %d\n", tx_phy, rx_phy);
 		}
-#endif	   
+#endif
 	}
 	break;
 
@@ -1309,7 +1306,6 @@ void ble_matter_scatternet_adapter_gcs_handle_discovery_result(uint8_t conn_id, 
 					   properties & GATT_CHAR_PROP_WRITE_NO_RSP,
 					   properties & GATT_CHAR_PROP_WRITE,
 					   properties & GATT_CHAR_PROP_NOTIFY);
-				
 				break;
 
 			case DISC_RESULT_CHAR_UUID128:
@@ -1454,7 +1450,6 @@ void ble_matter_scatternet_adapter_gcs_handle_discovery_result(uint8_t conn_id, 
 				printf("DESC UUID16[%d]: Descriptors handle=0x%x, uuid16=<0x%x>\n\r",
 					   i, p_result_table->result_data.char_desc_uuid16_disc_data.handle,
 					   p_result_table->result_data.char_desc_uuid16_disc_data.uuid16);
-				
 				break;
 			case DISC_RESULT_CHAR_DESC_UUID128:
 				APP_PRINT_INFO3("DESC UUID128[%d]: Descriptors handle=0x%x, uuid128=<%b>",
@@ -1463,7 +1458,6 @@ void ble_matter_scatternet_adapter_gcs_handle_discovery_result(uint8_t conn_id, 
 				printf("DESC UUID128[%d]: Descriptors handle=0x%x, uuid128="UUID_128_FORMAT"\n\r",
 					   i, p_result_table->result_data.char_desc_uuid128_disc_data.handle,
 					   UUID_128(p_result_table->result_data.char_desc_uuid128_disc_data.uuid128));
-				
 				break;
 
 			default:
@@ -1756,15 +1750,15 @@ T_APP_RESULT ble_matter_scatternet_adapter_app_profile_callback(T_SERVER_ID serv
 					T_MATTER_BLEMGR_TX_COMPLETE_CB_ARG *indication_complete_msg_matter = (T_MATTER_BLEMGR_TX_COMPLETE_CB_ARG *) os_mem_alloc(0, sizeof(T_MATTER_BLEMGR_TX_COMPLETE_CB_ARG));
 					memset(indication_complete_msg_matter, 0, sizeof(T_MATTER_BLEMGR_TX_COMPLETE_CB_ARG));
 					indication_complete_msg_matter->conn_id = p_param->event_data.send_data_result.conn_id;
-					
+
 					if (ble_matter_scatternet_adapter_send_callback_msg(BLE_MATTER_MSG_SEND_DATA_COMPLETE_MULTI_ADV, NULL,indication_complete_msg_matter) == false) {
 						printf("\n\r[%s] send callback msg fail\r\n", __func__);
 						os_mem_free(indication_complete_msg_matter);
 					}
 				}
 #else
-        		if (p_param->event_data.send_data_result.service_id == ble_matter_scatternet_adapter_service_id)
-        		{
+				if (p_param->event_data.send_data_result.service_id == ble_matter_scatternet_adapter_service_id)
+				{
                     T_SERVER_APP_CB_DATA *send_data_complete = os_mem_alloc(0, sizeof(T_SERVER_APP_CB_DATA));
 				    if(send_data_complete)
 				    {
@@ -1777,7 +1771,7 @@ T_APP_RESULT ble_matter_scatternet_adapter_app_profile_callback(T_SERVER_ID serv
 				else
 					printf("Malloc failed\r\n");
 			    }
-#endif	
+#endif
 			} else {
 				APP_PRINT_ERROR0("PROFILE_EVT_SEND_DATA_COMPLETE failed");
 				printf("PROFILE_EVT_SEND_DATA_COMPLETE failed\r\n");
