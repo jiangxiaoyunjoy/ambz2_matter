@@ -89,6 +89,7 @@ log_item_t at_matter_items[] = {
 
 #if (defined(CONFIG_BLE_MATTER_SCATTERNET_ADAPTER) && CONFIG_BLE_MATTER_SCATTERNET_ADAPTER)
     {"ATBS", fATBS, {NULL,NULL}},
+    {"ATBn", fATBn, {NULL,NULL}},
     {"ATBC", fATBC, {NULL,NULL}},
     {"ATBD", fATBD, {NULL,NULL}},
     {"ATBI", fATBI, {NULL,NULL}},

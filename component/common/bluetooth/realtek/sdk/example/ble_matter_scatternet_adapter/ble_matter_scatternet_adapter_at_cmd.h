@@ -34,6 +34,8 @@ extern "C" {
  *============================================================================*/
 void fATBS(void *arg);
 
+void fATBn(void *arg);
+
 void fATBC(void *arg);
 
 void fATBD(void *arg);

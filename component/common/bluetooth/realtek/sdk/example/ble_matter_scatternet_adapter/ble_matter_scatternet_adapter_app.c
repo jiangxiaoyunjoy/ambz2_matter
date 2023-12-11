@@ -564,9 +564,9 @@ void ble_matter_scatternet_adapter_app_handle_io_msg(T_IO_MSG io_msg)
 			}
 #endif
             } else if(io_msg.subtype == 2) {
-                //gap_sched_scan(false);
+                le_scan_stop();
             } else if (io_msg.subtype == 3) {
-                //gap_sched_scan(true);
+                le_scan_start();
             } else if (io_msg.subtype == 4) {
                 ble_matter_scatternet_adapter_app_handle_upstream_msg(io_msg.subtype, io_msg.u.buf);
             } else if (io_msg.subtype == 5) {
@@ -1782,12 +1782,10 @@ T_APP_RESULT ble_matter_scatternet_adapter_app_profile_callback(T_SERVER_ID serv
 			break;
 		}
 	} else if (service_id == ble_matter_scatternet_adapter_service_id) {
-		
         T_MATTER_CALLBACK_DATA *p_ms_cb_data = (T_MATTER_CALLBACK_DATA *)p_data;
 
         switch (p_ms_cb_data->msg_type)
         {
-	
         case SERVICE_CALLBACK_TYPE_INDIFICATION_NOTIFICATION:
            {
 

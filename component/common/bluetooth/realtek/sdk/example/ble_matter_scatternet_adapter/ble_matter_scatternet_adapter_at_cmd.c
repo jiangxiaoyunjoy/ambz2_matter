@@ -31,7 +31,7 @@
 #include "os_sched.h"
 #include "os_mem.h"
 
-
+extern T_GAP_DEV_STATE ble_matter_scatternet_adapter_gap_dev_state;
 #define MAX_ARGC 12
 #define UUID_16_LEN		2
 #define UUID_128_LEN	16
@@ -103,7 +103,7 @@ void fATBS(void *arg)
 		goto exit;
 	}
 
-	if (argc != 2) {
+	if ((argc != 2) && (argc != 3) && (argc != 4)){
 		printf("[printf] ERROR: input parameter error!\n\r");
 		goto exit;
 	}
@@ -112,9 +112,42 @@ void fATBS(void *arg)
 	return;
 
 exit:
-	printf("[ATBS] Scan:ATBS=scan_enable/disable\n");
+    printf("[ATBS] Scan:ATBS=scan_enable,filter_policy,filter_duplicate\n");
+	printf("[ATBS] [scan_enable]:0-(stop scan), 1(start scan)\n");
+	printf("[ATBS] [filter_policy]: 0-(any), 1-(whitelist), 2-(any RPA), 3-(whitelist RPA)\n");
+	printf("[ATBS] [filter_duplicate]: 0-(disable), 1-(enable)\n");
 	printf("[ATBS] eg:ATBS=1\n");
+	printf("[ATBS] eg:ATBS=1,0\n");
+	printf("[ATBS] eg:ATBS=1,0,1\n");
 	printf("[ATBS] eg:ATBS=0\n");
+}
+
+void fATBn(void *arg)
+{
+	int argc = 0;
+	char *argv[MAX_ARGC] = {0};
+
+	memset(ble_at_cmd_buf, 0, 256);
+
+	if (arg) {
+		strncpy(ble_at_cmd_buf, arg, sizeof(ble_at_cmd_buf));
+		argc = parse_param(ble_at_cmd_buf, argv);
+	} else {
+		goto exit;
+	}
+
+	if ((argc != 2) && (argc != 4)) {
+		printf("[AT_PRINTK] ERROR: input parameter error!\n\r");
+		goto exit;
+	}
+
+	ble_matter_scatternet_adapter_at_cmd_send_msg(10, ble_at_cmd_buf);
+	return;
+
+exit:
+	printf("[ATBn] Clear white list: ATBn=0\n");
+	printf("[ATBn] Add a device to the white list: ATBn=1,P/R,addr\n");
+	printf("[ATBn] Remove a device from the white list: ATBn=2,P/R,addr\n");
 }
 
 void fATBC(void *arg)
@@ -353,16 +386,46 @@ int ble_matter_scatternet_adapter_handle_at_cmd(uint16_t subtype, void *arg)
     switch(subtype){
         case 1://scan
         {
-            if(strcmp(argv[1], "0") == 0)
-            {
-                printf("Stop scan...\n");
-                le_scan_stop();
-            }
-            else if(strcmp(argv[1], "1") == 0)
-            {
-                printf("Start scan...\n");
-                le_scan_start();
-            }
+	        T_GAP_CAUSE cause;
+	        u8 scan_filter_policy = GAP_SCAN_FILTER_ANY;
+	        uint8_t scan_filter_duplicate = GAP_SCAN_FILTER_DUPLICATE_ENABLE;
+	        u8 scan_enable = 0;
+	        static u8 scan_is_processing = 0;
+	        T_GAP_DEV_STATE new_state = {0};
+
+	        if (argc >= 2) {
+		        scan_enable = atoi(argv[1]);
+		        if (scan_enable == 1) {
+			        if (argc == 3)
+				        scan_filter_policy = atoi(argv[2]);
+			        else if (argc == 4) {
+				        scan_filter_policy = atoi(argv[2]);
+				        scan_filter_duplicate = atoi(argv[3]);
+			        }
+		        }
+	        }
+
+	        if (ble_matter_scatternet_adapter_gap_dev_state.gap_init_state)
+	        {
+		        if (scan_enable) {
+			        if (scan_is_processing) {
+				        printf("Scan is processing, please stop it first\r\n");
+			        } else {
+                        scan_is_processing = 1;
+                        printf("Start scan, scan_filter_policy = %d, scan_filter_duplicate = %d\r\n", scan_filter_policy, scan_filter_duplicate);
+                        le_scan_set_param(GAP_PARAM_SCAN_FILTER_POLICY, sizeof(scan_filter_policy), &scan_filter_policy);
+                        le_scan_set_param(GAP_PARAM_SCAN_FILTER_DUPLICATES, sizeof(scan_filter_duplicate), &scan_filter_duplicate);
+                        ble_matter_scatternet_adapter_app_send_api_msg(3);
+                    }
+                } else {
+                    if (scan_is_processing) {
+                        ble_matter_scatternet_adapter_app_send_api_msg(2);
+                        printf("Stop scan\r\n");
+                        scan_is_processing = 0;
+                    } else
+                        printf("There is no scan\r\n");
+                }
+        	}
         }
         break;
 
@@ -636,6 +699,52 @@ int ble_matter_scatternet_adapter_handle_at_cmd(uint16_t subtype, void *arg)
             if (data != NULL)
                 os_mem_free(data);
             (void) ret;
+        }
+        break;
+
+        case 10://white list
+        {
+            int ret;
+            (void) argc;
+            u8 DestAddr[6] = {0};
+            T_GAP_REMOTE_ADDR_TYPE DestAddrType = GAP_REMOTE_ADDR_LE_PUBLIC;
+            T_GAP_WHITE_LIST_OP operation = GAP_WHITE_LIST_OP_ADD;
+            u8 type;
+
+        	type = atoi(argv[1]);
+            if((type != 0) && (type != 1) && (type !=2)){
+                printf("unknow operation code, return\r\n");
+                return -1;
+            }
+
+            if(type == 0){
+                ret = le_modify_white_list(GAP_WHITE_LIST_OP_CLEAR, NULL, GAP_REMOTE_ADDR_LE_PUBLIC);
+            }else{
+                if (argc != 4){
+                    printf("ERROR:input parameter error!\r\n");
+                    return -1;
+                }
+
+                if(type == 1)
+                    operation = GAP_WHITE_LIST_OP_ADD;
+                else if(type == 2)
+                    operation = GAP_WHITE_LIST_OP_REMOVE;
+
+                if(strcmp(argv[2], "P") == 0)
+                    DestAddrType = GAP_REMOTE_ADDR_LE_PUBLIC;
+                else if(strcmp(argv[2], "R") == 0)
+                    DestAddrType = GAP_REMOTE_ADDR_LE_RANDOM;
+
+                if (strlen(argv[3]) != 12)
+                    return -1;
+
+                hex_str_to_bd_addr(strlen(argv[3]), ( s8 *)argv[3], (u8*)DestAddr);
+
+                printf("cmd_modify, DestAddr: 0x%02X:0x%02X:0x%02X:0x%02X:0x%02X:0x%02X\r\n",
+                    DestAddr[5], DestAddr[4], DestAddr[3], DestAddr[2], DestAddr[1], DestAddr[0]);
+
+                ret = le_modify_white_list(operation, DestAddr, DestAddrType);
+        	}
         }
         break;
 

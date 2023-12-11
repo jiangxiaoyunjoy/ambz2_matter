@@ -64,7 +64,7 @@
 #define DEFAULT_ADVERTISING_INTERVAL_MAX            192 //120ms
 
 extern T_SERVER_ID ble_matter_scatternet_adapter_service_id;//from app.c
-extern T_GAP_DEV_STATE ble_matter_adapter_gap_dev_state;
+extern T_GAP_DEV_STATE ble_matter_scatterbet_adapter_gap_dev_state;
 #if CONFIG_BLE_MATTER_MULTI_ADV
 extern uint8_t matter_local_static_random_addr[6];
 #endif
@@ -224,7 +224,7 @@ void ble_matter_scatternet_adapter_app_le_profile_init(void)
 	server_init(1);
 	ble_matter_scatternet_adapter_service_id = ble_matter_scatternet_adapter_service_add_service((void *)ble_matter_scatternet_adapter_app_profile_callback);
 	server_register_app_cb(ble_matter_scatternet_adapter_app_profile_callback);
-	
+
 	/* Add Client Module */
 	client_init(1);
 	ble_matter_scatternet_adapter_gcs_client_id = gcs_add_client(ble_matter_scatternet_adapter_gcs_client_callback, BLE_MATTER_SCATTERNET_ADAPTER_APP_MAX_LINKS, BLE_MATTER_SCATTERNET_ADAPTER_APP_MAX_DISCOV_TABLE_NUM);
@@ -257,7 +257,7 @@ int ble_matter_scatternet_adapter_app_init(void)
 	while(!(wifi_is_up(RTW_STA_INTERFACE) || wifi_is_up(RTW_AP_INTERFACE))) {
 		os_delay(1000);
 	}
-	
+
 	//judge BLE central is already on
 	le_get_gap_param(GAP_PARAM_DEV_STATE, &new_state);
 	if (new_state.gap_init_state == GAP_INIT_STATE_STACK_READY) {
@@ -287,9 +287,9 @@ void ble_matter_scatternet_adapter_app_deinit(void)
 	le_get_gap_param(GAP_PARAM_DEV_STATE, &state);
 	if (state.gap_init_state != GAP_INIT_STATE_STACK_READY) {
 		printf("[BLE Matter Adapter]BT Stack is not running\n\r");
-		ble_matter_adapter_gap_dev_state.gap_init_state = GAP_INIT_STATE_INIT;
+		ble_matter_scatterbet_adapter_gap_dev_state.gap_init_state = GAP_INIT_STATE_INIT;
 	}
-	
+
 #if F_BT_DEINIT
 	else {
 		gcs_delete_client();
@@ -298,7 +298,7 @@ void ble_matter_scatternet_adapter_app_deinit(void)
 		printf("[BLE Matter Adapter]BT Stack deinitalized\n\r");
 	}
 #endif
-	ble_matter_adapter_gap_dev_state.gap_init_state = GAP_INIT_STATE_INIT;
+	ble_matter_scatterbet_adapter_gap_dev_state.gap_init_state = GAP_INIT_STATE_INIT;
 }
 
 /** @} */ /* End of group CENTRAL_CLIENT_DEMO_MAIN */
